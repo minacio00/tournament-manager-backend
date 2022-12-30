@@ -1,5 +1,6 @@
 const express = require('express');
 const cors =  require('cors');
+
 // import { firebaseConfig } from './firebaseCredentials.js';
 // import {initializeApp} from "firebase/app";
 //todo : savlar dados no backend, criar rota que devolve json do campeonato e todos os campeonatos disponíveis
@@ -12,35 +13,31 @@ app.use(express.json());
 app.post('/newevent', (req, res) => {
   // console.log(req.body)
   const NumberOfParticipants  = parseInt(req.body.NumberOfParticipants);
+  const numOfRounds = Math.log2(NumberOfParticipants);
   const bracket = [];
-  let participantsId = 0;
+  let i, j = 1; // duas partidas sempre vão apontar para uma próxima, então a cada duas decrementar o nextMatchId
+  let nextMatchId = NumberOfParticipants-1;
+  let matchId =  NumberOfParticipants-1;
+  let currentRound = numOfRounds;
+  let gamesPerRound = 1;
+  
   console.log(bracket.length)
   for (let index = 0; index < NumberOfParticipants-1; index++){
     bracket.push({
-      id: index,
-      nextMatchId: index+1,
-      tournamentRoundText: '3',
-      startTime: '2021-05-30',
+      id: matchId,
+      nextMatchId: index===0 ? null : nextMatchId,
+      tournamentRoundText: currentRound.toString(),
+      startTime: req.body.EventDate,
       state: 'SCHEDULED',
-      participants: [
-        {
-          id: participantsId,
-          resultText: null,
-          stataus: 'SCHEDULED',
-          name: 'TBD',
-          picture: '',
-        }
-      ,
-      {
-        id: participantsId+1,
-        resultText: null,
-        stataus: 'SCHEDULED',
-        name: 'TBD',
-        picture: '',
-      }
-    ],
-    })
-    participantsId+2;
+      participants: [],
+    });
+    matchId--
+    // if(j % 2 === 1){ nextMatchId--}
+    i++ // contador de partidas geradas
+    if(i === gamesPerRound){
+      currentRound = currentRound - 1;
+      gamesPerRound = i + gamesPerRound * 2; // comenaçando pela final, a cada round o número de jogos na chave dobra: 1 jogo na final, 2 na semi....
+    }
   }
   console.log(bracket);
   res.status(200).json(bracket);
