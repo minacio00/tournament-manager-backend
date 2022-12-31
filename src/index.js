@@ -15,8 +15,9 @@ app.post('/newevent', (req, res) => {
   const NumberOfParticipants  = parseInt(req.body.NumberOfParticipants);
   const numOfRounds = Math.log2(NumberOfParticipants);
   const bracket = [];
-  let i, j = 1; // duas partidas sempre vão apontar para uma próxima, então a cada duas decrementar o nextMatchId
-  let nextMatchId = NumberOfParticipants-1;
+  let j = 1; // duas partidas sempre vão apontar para uma próxima, então a cada duas decrementar o nextMatchId
+  let i = 1;
+  let nextMatchId = NumberOfParticipants;
   let matchId =  NumberOfParticipants-1;
   let currentRound = numOfRounds;
   let gamesPerRound = 1;
@@ -32,12 +33,13 @@ app.post('/newevent', (req, res) => {
       participants: [],
     });
     matchId--
-    // if(j % 2 === 1){ nextMatchId--}
-    i++ // contador de partidas geradas
+    if(j % 2 === 1){ nextMatchId--}
     if(i === gamesPerRound){
       currentRound = currentRound - 1;
-      gamesPerRound = i + gamesPerRound * 2; // comenaçando pela final, a cada round o número de jogos na chave dobra: 1 jogo na final, 2 na semi....
+      gamesPerRound = i+gamesPerRound * 2; // comenaçando pela final, a cada round o número de jogos na chave dobra: 1 jogo na final, 2 na semi....
     }
+    i++ // contador de partidas geradas
+    j++ // contador para controlar o decremento do id da próxima partida
   }
   console.log(bracket);
   res.status(200).json(bracket);
