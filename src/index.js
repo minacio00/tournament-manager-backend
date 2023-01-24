@@ -1,5 +1,6 @@
 const express = require('express');
 const cors =  require('cors');
+const {v4: uuidv4} = require('uuid');
 
 // import { firebaseConfig } from './firebaseCredentials.js';
 // import {initializeApp} from "firebase/app";
@@ -10,6 +11,32 @@ app.use(cors({credentials: true, origin: true}));
 app.options("*",cors());
 app.use(express.json());
 // const firebaseapp = initializeApp(firebaseConfig);
+
+app.post('/register/:username', (req,res) => {
+  // deve receber o campeonato, e o nome do usuário se cadastrando
+  // posicionar o participante na chave
+  console.log(req.body, "register");
+  let tournament = req.body;
+  const posIndex = tournament.currentEvent.matches.findIndex((value) => {
+    if((value.participants.length < 2) && (value.tournamentRoundText == '1')){
+      return true
+    }
+  }); // jogos que tiverem menos de dois confirmados
+  if (posIndex != -1) {
+    tournament.currentEvent.matches[posIndex].participants.push({
+      "id": uuidv4(), // adicionar id unico,
+      "resultText": null,
+      "isWinner": false,
+      "status": null,
+      "name": req.params.username
+    })
+    res.status(200).json(tournament);
+  }
+  else {
+    res.status(500);
+  }
+});
+
 app.post('/newevent', (req, res) => {
   // console.log(req.body)
   const NumberOfParticipants  = parseInt(req.body.NumberOfParticipants);
@@ -22,11 +49,10 @@ app.post('/newevent', (req, res) => {
   let currentRound = numOfRounds;
   let gamesPerRound = 1;
   
-  console.log(bracket.length)
   for (let index = 0; index < NumberOfParticipants-1; index++){
     bracket.push({
       id: matchId,
-      nextMatchId: index===0 ? null : nextMatchId,
+      nextMatchId: index === 0 ? null : nextMatchId,
       tournamentRoundText: currentRound.toString(),
       startTime: req.body.EventDate,
       state: 'SCHEDULED',
