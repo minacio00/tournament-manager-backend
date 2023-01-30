@@ -1,2 +1,3 @@
 node_modules
 src/firebaseCredentials.js
+.env

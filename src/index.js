@@ -1,7 +1,9 @@
 const express = require('express');
 const cors =  require('cors');
 const {v4: uuidv4} = require('uuid');
-
+const firebaseApp = require('./firebaseCredentials');
+const {getAuth, createUserWithEmailAndPassword } = require('firebase/auth');
+const { async } = require('@firebase/util');
 // import { firebaseConfig } from './firebaseCredentials.js';
 // import {initializeApp} from "firebase/app";
 //todo : savlar dados no backend, criar rota que devolve json do campeonato e todos os campeonatos disponíveis
@@ -12,9 +14,20 @@ app.options("*",cors());
 app.use(express.json());
 // const firebaseapp = initializeApp(firebaseConfig);
 
+app.post('/newUser', async (req, res) => {
+  const auth = getAuth();
+  const {email, password} = req.body;
+  let user;
+  await createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => user = userCredential)
+  .catch((e) => {
+    console.log(e.code);
+    console.log(e.message);
+  })
+  .finally(() => res.status(200).json(user))
+})
 app.post('/register/:username', (req,res) => {
   // deve receber o campeonato, e o nome do usuário se cadastrando
-  // posicionar o participante na chave
   console.log(req.body, "register");
   let tournament = req.body;
   const posIndex = tournament.currentEvent.matches.findIndex((value) => {
