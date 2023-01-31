@@ -2,7 +2,7 @@ const express = require('express');
 const cors =  require('cors');
 const {v4: uuidv4} = require('uuid');
 const firebaseApp = require('./firebaseCredentials');
-const {getAuth, createUserWithEmailAndPassword } = require('firebase/auth');
+const {getAuth, createUserWithEmailAndPassword, signInWithCredential, signInWithEmailAndPassword } = require('firebase/auth');
 const { async } = require('@firebase/util');
 // import { firebaseConfig } from './firebaseCredentials.js';
 // import {initializeApp} from "firebase/app";
@@ -12,20 +12,38 @@ const app =  express();
 app.use(cors({credentials: true, origin: true}));
 app.options("*",cors());
 app.use(express.json());
-// const firebaseapp = initializeApp(firebaseConfig);
+
 
 app.post('/newUser', async (req, res) => {
   const auth = getAuth();
   const {email, password} = req.body;
+  req.cookies
   let user;
   await createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => user = userCredential)
+  .then((userCredential) => user = userCredential.user)
   .catch((e) => {
-    console.log(e.code);
-    console.log(e.message);
+    // console.log(e.code);
+    res.statusMessage = "server error";
+    res.status(500).json(e);
   })
   .finally(() => res.status(200).json(user))
-})
+});
+
+app.post('/signin', async (req, res) => {
+  const auth = getAuth();
+  const {userEmail, password} = req.body;
+  let user;
+  await signInWithEmailAndPassword(auth, userEmail, password)
+  .then((userCredential) => user = userCredential.user)
+  .catch((e) => {
+    // console.log(e.code);
+    res.statusMessage = "server error";
+    res.status(500).json(e);
+  })
+  .finally(() => res.status(200).json(user))
+});
+
+//registra um usuário no campeonato
 app.post('/register/:username', (req,res) => {
   // deve receber o campeonato, e o nome do usuário se cadastrando
   console.log(req.body, "register");
