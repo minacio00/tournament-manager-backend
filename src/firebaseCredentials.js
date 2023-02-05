@@ -1,23 +1,12 @@
-const {initializeApp} = require ('firebase/app')
-require('dotenv').config();
+const {initializeApp, cert, applicationDefault} = require ('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
+const serviceAccount = require('../smashggclone-3bdfde9dd377.json');
 
-const firebaseConfig = {
- // usar .evn para esses valores e então commitar o firebaseCredentials.js
-  apiKey: process.env.API_KEY,
+const firebaseApp = initializeApp({
+  credential: cert(serviceAccount)
+});
 
-  authDomain: process.env.AUTH_DOMAIN,
-
-  projectId: process.env.PROJECT_ID,
-
-  storageBucket: process.env.STORAGE_BUCKET,
-  
-  messagingSenderId: process.env.MESSAGING_SENDER_ID,
-
-  appId: process.env.APP_ID
-
-};
+const db = getFirestore(firebaseApp);
 
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-module.export = app
+module.exports = {firebaseApp, db};
