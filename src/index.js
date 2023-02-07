@@ -13,7 +13,9 @@ app.use(cors({credentials: true, origin: true}));
 app.options("*",cors());
 app.use(express.json());
 
-app.post('/register/:username', tournamentController.userSubscription);
+app.get('/tournaments/view',tournamentController.tournaments);
 
+app.post('/register/:username', tournamentController.userSubscription);
 app.post('/newevent', tournamentController.newBracket);
 app.listen(8080, () => { console.log("listening to 8080") });
+module.exports = app;
