@@ -199,6 +199,7 @@ if (env === "test") {
                 Sport: req.body.Sport,
                 confirmed: req.body.confirmed,
                 NumberOfParticipants: req.body.NumberOfParticipants,
+                imageUrl: req.body.imageUrl,
                 matches
             })
             .catch((e) =>{
