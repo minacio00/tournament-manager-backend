@@ -4,7 +4,7 @@ firebase and to create a service acount on google cloud and
 import the crendials on src/firebaseCredentials.js 
 
 This project is REST api made with express.js and uses fireStore as a database
-### ENDPOINTS:
+ ### ENDPOINTS:
     /tournaments/view - return a json of all the tournaments currently created
     /register/:username - expect a json that represents an event and a user's nickname, returns a json that
     represents the same event json with the user registered in the bracket
